@@ -115,14 +115,17 @@ exports.createNotificationOnComment = functions
 
 exports.onUserImageChange = functions
     .firestore
-    .document('/users/{user.Id')
+    .document('/users/{userId}')
     .onUpdate(change => {
         console.log(change.before.data());
         console.log(change.after.data());
         if(change.before.data().imageUrl !== change.after.data().imageUrl){
             console.log('image has changed');
             const batch = db.batch();
-            return db.collection('screams').where('userHandle', '==', change.before.data().handle).get()
+            return db
+                .collection('screams')
+                .where('userHandle', '==', change.before.data().handle)
+                .get()
                 .then(data => {
                     data.forEach(doc => {
                         const scream = db.doc(`/screams/${doc.id}`);
@@ -135,22 +138,25 @@ exports.onUserImageChange = functions
 
 exports.onScreamDelete = functions
     .firestore
-    .document('/screams/{user.Id')
+    .document('/screams/{screamId}')
     .onDelete((snapshot, context) => {
         const screamId = context.params.screamId;
         const batch = db.batch();
-        return db.collection('comments').where('screamId', '==', screamId).get()
+        return db
+            .collection('comments')
+            .where('screamId', '==', screamId)
+            .get()
             .then(data => {
                 data.forEach(doc => {
                     batch.delete(db.doc(`/comments/${doc.id}`));
                 })
-                return db.collection('likes').where('screamId', '==', screamId);
+                return db.collection('likes').where('screamId', '==', screamId).get();
             })
             .then(data => {
                 data.forEach(doc => {
                     batch.delete(db.doc(`/likes/${doc.id}`));
                 })
-                return db.collection('notifications').where('screamId', '==', screamId);
+                return db.collection('notifications').where('screamId', '==', screamId).get();
             })
             .then(data => {
                 data.forEach(doc => {
