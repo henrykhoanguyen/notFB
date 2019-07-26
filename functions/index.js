@@ -23,28 +23,33 @@ const {
     login,
     uploadImage, 
     addUserDetails, 
-    getAuthenticatedUser
+    getAuthenticatedUser,
+    getUserDetails,
+    markNotificationsRead
 } = require('./handlers/users');
 
 // Scream Routes
-app.get('/screams', getAllScreams);             // Get All Screams
-app.post('/scream', FBAuth, postOneScream);     // Post One Scream
-app.get('/scream/:screamId', getScream);        // Get 1 Scream
+app.get('/screams', getAllScreams);                 // Get All Screams
+app.post('/scream', FBAuth, postOneScream);         // Post One Scream
+app.get('/scream/:screamId', getScream);            // Get 1 Scream
 app.delete('/scream/:screamId',
-    FBAuth, deleteScream);                      // Delete Scream
+    FBAuth, deleteScream);                          // Delete Scream
 app.get('/scream/:screamId/like',
-    FBAuth, likeScream)                         // Like A scream
+    FBAuth, likeScream)                             // Like A scream
 app.get('/scream/:screamId/unlike', 
-    FBAuth, unlikeScream)                       // Unlike A Scream
+    FBAuth, unlikeScream)                           // Unlike A Scream
 app.post('/scream/:screamId/comment',
-    FBAuth, commentOnScream);                   // Comment On A Scream
+    FBAuth, commentOnScream);                       // Comment On A Scream
 
 // User Routes
-app.post('/signup', signup);                    // Signup 
-app.post('/login', login);                      // Login
-app.post('/user/image', FBAuth, uploadImage);   // Upload Image
-app.post('/user', FBAuth, addUserDetails);      // Edit User Info
-app.get('/user', FBAuth, getAuthenticatedUser); // Get Users Info
+app.post('/signup', signup);                        // Signup 
+app.post('/login', login);                          // Login
+app.post('/user/image', FBAuth, uploadImage);       // Upload Image
+app.post('/user', FBAuth, addUserDetails);          // Edit User Info
+app.get('/user', FBAuth, getAuthenticatedUser);     // Get All Users Info
+app.get('/user/:handle', getUserDetails);           // Get One User Info
+app.post('/notifications',
+    FBAuth, markNotificationsRead);                 // Mark Notification Read
 
 exports.api = functions.https.onRequest(app);
 
@@ -52,11 +57,8 @@ exports.deleteNotificationOnUnlike = functions
 .firestore
 .document('likes/{id}')
 .onDelete((snapshot) => {
-    db.doc(`/notifications/${snapshot.id}`)
+    return db.doc(`/notifications/${snapshot.id}`)
         .delete()
-        .then(() => {
-            return;
-        })
         .catch(err => {
             console.error(err);
             return;
@@ -67,9 +69,10 @@ exports.createNotificationOnLike = functions
 .firestore
 .document('likes/{id}')
 .onCreate((snapshot) => {
-    db.doc(`/screams/${snapshot.data().screamId}`).get()
+    return db.doc(`/screams/${snapshot.data().screamId}`)
+        .get()
         .then(doc => {
-            if(doc.exists){
+            if(doc.exists && doc.data().userHandle != snapshot.data().userHandle){
                 return db.doc(`/notifications/${snapshot.id}`).set({
                     createdAt: new Date().toISOString(),
                     recipient: doc.data().userHandle,
@@ -79,9 +82,6 @@ exports.createNotificationOnLike = functions
                     screamId: doc.id
                 });
             }
-        })
-        .then(() => {
-            return;
         })
         .catch(err => {
             console.error(err);
@@ -93,9 +93,10 @@ exports.createNotificationOnComment = functions
 .firestore
 .document('comments/{id}')
 .onCreate((snapshot) => {
-    db.doc(`/screams/${snapshot.data().screamId}`).get()
+    return db.doc(`/screams/${snapshot.data().screamId}`)
+        .get()
         .then(doc => {
-            if(doc.exists){
+            if(doc.exists && doc.data().userHandle != snapshot.data().userHandle){
                 return db.doc(`/notifications/${snapshot.id}`).set({
                     createdAt: new Date().toISOString(),
                     recipient: doc.data().userHandle,
@@ -106,11 +107,25 @@ exports.createNotificationOnComment = functions
                 });
             }
         })
-        .then(() => {
-            return;
-        })
         .catch(err => {
             console.error(err);
             return;
         });
 });
+
+exports.onUserImageChange = functions
+    .firestore
+    .document('/users/{user.Id')
+    .onUpdate(change => {
+        console.log(change.before.data());
+        console.log(change.after.data());
+        let batch = db.batch();
+        return db.collection('screams').where('userHandle', '==', change.before.data().handle).get()
+            .then(data => {
+                data.forEach(doc => {
+                    const scream = db.doc(`/screams/${doc.id}`);
+                    batch.update(scream, { userImage: change.after.data().imageUrl });
+                })
+                return batch.commit();
+            })
+    });
