@@ -3,12 +3,14 @@ import withStyles from "@material-ui/core/styles/withStyles";
 import PropTypes from "prop-types";
 import AppIcon from "../images/horseshoe.png";
 import axios from "axios";
+import { Link } from "react-router-dom";
 
 // MUI Stuff
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 const styles = {
   form: {
@@ -24,7 +26,16 @@ const styles = {
     margin: "10px auto 10px auto"
   },
   button: {
-    marginTop: 20
+    marginTop: 20,
+    position: "relative"
+  },
+  customError:{
+    color: "red",
+    fontSize: "0.8rem",
+    margin: 10
+  },
+  progress:{
+    position: "absolute",
   }
 };
 
@@ -37,7 +48,7 @@ class login extends Component {
       loading: false,
       errors: []
     };
-  };
+  }
 
   handleSubmit = event => {
     event.preventDefault();
@@ -50,8 +61,9 @@ class login extends Component {
       password: this.state.password
     };
     axios
-      .post('/login', userData)
+      .post("/login", userData)
       .then(res => {
+        localStorage.setItem("FBIdToken", `Bearer ${res.data.token}`);
         console.log(res.data);
         this.setState({
           loading: false
@@ -116,14 +128,29 @@ class login extends Component {
               onChange={this.handleChange}
               fullWidth
             />
+            {errors.general && (
+              // If there is error, show here.
+              <Typography variant="body2" className={classes.customError}>
+                {errors.general}
+              </Typography>
+            )}
             <Button
               type="submit"
               variant="outlined"
               color="secondary"
               className={classes.button}
+              disabled={loading}
             >
               Login
+              {loading && (
+                // If loading then show this animation
+                <CircularProgress size={25} classNamw={classes.progress} />
+              )}
             </Button>
+            <br /> <br />
+            <small>
+              Don't have an account? sign up <Link to="/signup">Here</Link>
+            </small>
           </form>
         </Grid>
         <Grid item sm />
