@@ -16,6 +16,14 @@ body {
   margin: auto;
 }
 
+.nav-container svg {
+ color: #fff;
+}
+
+.nav-container button {
+  padding: 20px;
+}
+
 a{
   text-decoration: none;
 }
