@@ -84,6 +84,7 @@ export const editUserDetails = userDetails => dispatch => {
     })
     .catch(err => console.log(err));
 };
+
 const setAuthorizationHeader = token => {
   const FBIdToken = `Bearer ${token}`;
   localStorage.setItem("FBIdToken", FBIdToken);
