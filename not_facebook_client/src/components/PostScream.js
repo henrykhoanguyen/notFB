@@ -44,10 +44,16 @@ class PostScream extends Component {
     errors: {}
   };
   componentWillReceiveProps(nextProps) {
-    if(nextProps.UI.errors ){
+    if (nextProps.UI.errors) {
       this.setState({
         errors: nextProps.UI.errors
-      })
+      });
+    }
+    if (!nextProps.UI.errors && !nextProps.UI.loading) {
+      this.setState({
+        body: ""
+      });
+      this.handleClose();
     }
   }
 
@@ -56,7 +62,7 @@ class PostScream extends Component {
   };
 
   handleClose = () => {
-    this.setState({ open: false });
+    this.setState({ open: false, errors: {} });
   };
 
   handleChange = event => {
@@ -65,7 +71,6 @@ class PostScream extends Component {
   handleSubmit = event => {
     event.preventDefault();
     this.props.postScream({ body: this.state.body });
-    this.setState({ open: false });
   };
   render() {
     const { errors } = this.state;
@@ -100,7 +105,7 @@ class PostScream extends Component {
                 multiline
                 rows="2"
                 placeholder="Scream something..."
-                errors={errors.body ? "true" : "false"}
+                error={errors.body ? true : false}
                 helperText={errors.body}
                 className={classes.textField}
                 onChange={this.handleChange}
@@ -111,7 +116,7 @@ class PostScream extends Component {
                 variant="contained"
                 color="secondary"
                 className={classes.submitButton}
-                disable={loading.toString()}
+                disabled={loading}
               >
                 Submit
                 {loading && (
