@@ -6,22 +6,18 @@ import createMuiTheme from "@material-ui/core/styles/createMuiTheme";
 import themeFile from "./util/theme";
 import jwtDecode from "jwt-decode";
 import axios from 'axios';
-
+// Components
+import Navbar from "./components/layout/Navbar";
+import AuthRoute from "./util/AuthRoute";
+// Pages
+import home from "./pages/home";
+import login from "./pages/login";
+import signup from "./pages/signup";
 // Redux
 import { Provider } from "react-redux";
 import store from "./redux/store";
 import { SET_AUTHENTICATED } from './redux/types';
 import { logoutUser, getUserData } from './redux/actions/userActions';
-
-// Components
-import Navbar from "./components/Navbar";
-import AuthRoute from "./util/AuthRoute";
-
-// Pages
-import home from "./pages/home";
-import login from "./pages/login";
-import signup from "./pages/signup";
-import { Dayjs } from "dayjs";
 
 const theme = createMuiTheme(themeFile);
 

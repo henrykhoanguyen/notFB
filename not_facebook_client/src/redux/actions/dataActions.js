@@ -1,5 +1,7 @@
 import {
   SET_SCREAMS,
+  SET_SCREAM,
+  STOP_LOADING_UI,
   LOADING_DATA,
   LIKE_SCREAM,
   UNLIKE_SCREAM,
@@ -29,6 +31,20 @@ export const getScreams = () => dispatch => {
       });
     });
 };
+
+// Get a scream
+export const getScream = (screamId) => dispatch => {
+  dispatch({ type: LOADING_UI });
+  axios.get(`/scream/${screamId}`)
+  .then(res => {
+    dispatch({
+      type: SET_SCREAM,
+      payload: res.data
+    });
+    dispatch({ type: STOP_LOADING_UI });
+  })
+  .catch(err => console.log(err))
+}
 
 // Post a scream
 export const postScream = newScream => dispatch => {
@@ -95,4 +111,4 @@ export const deleteScream = screamId => dispatch => {
 export const clearErrors = () => dispatch => {
   dispatch({ type: CLEAR_ERRORS });
   
-}
+} 
