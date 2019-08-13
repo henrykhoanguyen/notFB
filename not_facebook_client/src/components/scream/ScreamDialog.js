@@ -4,7 +4,9 @@ import withStyles from "@material-ui/core/styles/withStyles";
 import MyButton from "../../util/MyButton";
 import dayjs from "dayjs";
 import { Link } from "react-router-dom";
-import LikeButton from './LikeButton';
+import LikeButton from "./LikeButton";
+import Comments from "./Comments";
+import CommentForm from './CommentForm';
 // MUI Stuff
 import Dialog from "@material-ui/core/Dialog";
 import DialogContent from "@material-ui/core/DialogContent";
@@ -21,30 +23,26 @@ import { getScream } from "../../redux/actions/dataActions";
 
 const styles = theme => ({
   ...theme.spreadComponent,
-  invisibleSeparator: {
-    border: "none",
-    margin: 4
-  },
-  profileImage:{
+  profileImage: {
     maxWidth: 200,
     height: 200,
-    borderRadius: '50%',
-    objectFit: 'cover'
+    borderRadius: "50%",
+    objectFit: "cover"
   },
-  dialogContent:{
+  dialogContent: {
     padding: 20
   },
   expandButton: {
-    position: 'absolute',
+    position: "absolute",
     left: "90%",
-    top: '30%'
+    top: "30%"
   },
   closeButton: {
-    position: 'absolute',
-    left: '90%'
+    position: "absolute",
+    left: "90%"
   },
   spinnerDiv: {
-    textAlign: 'center',
+    textAlign: "center",
     marginTop: 50,
     marginBottom: 50
   }
@@ -73,14 +71,15 @@ class ScreamDialog extends Component {
         likeCount,
         commentCount,
         userImage,
-        userHandle
+        userHandle,
+        comments
       },
       UI: { loading }
     } = this.props;
-
+    //console.log('scream dialog',this.props)
     const dialogMarkup = loading ? (
       <div className={classes.spinnerDiv}>
-      <CircularProgress size={200} />
+        <CircularProgress size={200} />
       </div>
     ) : (
       <Grid container spacing={10}>
@@ -102,13 +101,16 @@ class ScreamDialog extends Component {
           </Typography>
           <hr className={classes.invisibleSeparator} />
           <Typography variant="body1">{body}</Typography>
-          <LikeButton screamId={screamId}/>
-            <span>{likeCount} likes</span>
+          <LikeButton screamId={screamId || ''} />
+          <span>{likeCount} likes</span>
           <MyButton tip="Comment">
             <ChatIcon color="primary" />
           </MyButton>
           <span>{commentCount} comments</span>
         </Grid>
+        <hr className={classes.visibleSeparator}/>
+        <CommentForm screamId={screamId || ''}/>
+        <Comments comments={comments || []} />
       </Grid>
     );
     return (

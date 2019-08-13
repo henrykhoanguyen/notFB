@@ -30,6 +30,7 @@ class LikeButton extends Component {
   };
   render() {
     const { authenticated } = this.props.user;
+    //console.log(this.props)
     const likeButton = !authenticated ? (
       <Link to="/login">
         <MyButton tip="Like">
