@@ -13,6 +13,7 @@ import AuthRoute from "./util/AuthRoute";
 import home from "./pages/home";
 import login from "./pages/login";
 import signup from "./pages/signup";
+import user from './pages/user';
 // Redux
 import { Provider } from "react-redux";
 import store from "./redux/store";
@@ -57,6 +58,7 @@ class App extends Component {
                   path="/signup"
                   component={signup}
                 />
+                <Route exact path='/users/:handle' component={user}/>
               </Switch>
             </div>
           </Router>
