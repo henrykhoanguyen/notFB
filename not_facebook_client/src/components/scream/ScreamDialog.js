@@ -149,7 +149,7 @@ ScreamDialog.propTypes = {
   getScream: PropTypes.func.isRequired,
   screamId: PropTypes.string.isRequired,
   userHandle: PropTypes.string.isRequired,
-  scream: PropTypes.array.isRequired,
+  scream: PropTypes.object.isRequired,
   clearErrors: PropTypes.func.isRequired
 };
 

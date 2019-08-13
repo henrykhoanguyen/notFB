@@ -132,13 +132,13 @@ export const getUserData = userHandle => dispatch => {
     .get(`/user/${userHandle}`)
     .then(res => {
       dispatch({
-        type: SET_SCREAM,
+        type: SET_SCREAMS,
         payload: res.data.screams
       });
     })
     .catch(() => {
       dispatch({
-        type: SET_SCREAM,
+        type: SET_SCREAMS,
         payload: null
       });
     });

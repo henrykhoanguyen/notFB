@@ -49,7 +49,7 @@ const StaticProfile = props => {
     classes,
     profile: { handle, createdAt, imageUrl, bio, website, location }
   } = props;
-  console.log(props);
+  //console.log(props);
   return (
     <Paper className={classes.paper}>
       <div className={classes.profile}>

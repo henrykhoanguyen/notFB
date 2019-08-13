@@ -27,13 +27,13 @@ class user extends Component {
   }
   render() {
     const { screams, loading } = this.props.data;
-    console.log(this.props.data);
+    //console.log(this.props.data);
     const screamsMarkup = loading ? (
       <p>Loading data...</p>
     ) : screams === null ? (
       <p>No screams from this user</p>
     ) : (
-      screams.map(post => <Scream key={screams.screamId} scream={post} />)
+      screams.map(scream => <Scream key={scream.screamId} scream={scream} />)
     );
     return (
       <Grid container spacing={5}>
