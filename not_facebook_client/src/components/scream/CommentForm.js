@@ -67,7 +67,7 @@ class CommentForm extends Component {
         <hr className={classes.visibleSeparator} />
       </Grid>
     ) : null;
-    console.log(errors.comment)
+    //console.log(errors.comment)
     return CommentFormMarkup;
   }
 }

@@ -6,7 +6,7 @@ import dayjs from "dayjs";
 import { Link } from "react-router-dom";
 import LikeButton from "./LikeButton";
 import Comments from "./Comments";
-import CommentForm from './CommentForm';
+import CommentForm from "./CommentForm";
 // MUI Stuff
 import Dialog from "@material-ui/core/Dialog";
 import DialogContent from "@material-ui/core/DialogContent";
@@ -50,14 +50,35 @@ const styles = theme => ({
 
 class ScreamDialog extends Component {
   state = {
-    open: false
+    open: false,
+    oldPath: "",
+    newPath: ""
   };
+
+  componentDidMount() {
+    if (this.props.openDialog) {
+      this.handleOpen();
+    }
+  }
   handleOpen = () => {
-    this.setState({ open: true });
+    let oldPath = window.location.pathname;
+
+    const { userHandle, screamId } = this.props;
+    const newPath = `/users/${userHandle}/scream/${screamId}`;
+
+    if (oldPath === newPath) {
+      oldPath = `/users/${userHandle}`;
+    }
+    console.log(oldPath);
+    window.history.pushState(null, null, newPath);
+
+    this.setState({ open: true, oldPath, newPath });
     this.props.getScream(this.props.screamId);
   };
 
   handleClose = () => {
+    console.log(this.state.oldPath);
+    window.history.pushState(null, null, this.state.oldPath);
     this.setState({ open: false });
     this.props.clearErrors();
   };
@@ -102,15 +123,15 @@ class ScreamDialog extends Component {
           </Typography>
           <hr className={classes.invisibleSeparator} />
           <Typography variant="body1">{body}</Typography>
-          <LikeButton screamId={screamId || ''} />
+          <LikeButton screamId={screamId || ""} />
           <span>{likeCount} likes</span>
           <MyButton tip="Comment">
             <ChatIcon color="primary" />
           </MyButton>
           <span>{commentCount} comments</span>
         </Grid>
-        <hr className={classes.visibleSeparator}/>
-        <CommentForm screamId={screamId || ''}/>
+        <hr className={classes.visibleSeparator} />
+        <CommentForm screamId={screamId || ""} />
         <Comments comments={comments || []} />
       </Grid>
     );

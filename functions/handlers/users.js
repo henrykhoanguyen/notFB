@@ -182,16 +182,16 @@ exports.getAuthenticatedUser = (req, res) => {
         .get();
     })
     .then(data => {
-      userData.notification = [];
+      userData.notifications = [];
       data.forEach(doc => {
-        userData.notification.push({
+        userData.notifications.push({
           recipient: doc.data().recipient,
           sender: doc.data().sender,
           createdAt: doc.data().createdAt,
           screamId: doc.data().screamId,
           type: doc.data().type,
           read: doc.data().read,
-          notificationId: doc.data().recipient
+          notificationId: doc.id
         });
       });
       return res.json(userData);
@@ -270,18 +270,16 @@ exports.uploadImage = (req, res) => {
 
 exports.markNotificationsRead = (req, res) => {
   let batch = db.batch();
-
-  req.body.forEach(notificationId => {
+  req.body.forEach((notificationId) => {
     const notification = db.doc(`/notifications/${notificationId}`);
     batch.update(notification, { read: true });
   });
-
   batch
     .commit()
     .then(() => {
-      return res.json({ message: "Notifications marked read" });
+      return res.json({ message: 'Notifications marked read' });
     })
-    .catch(err => {
+    .catch((err) => {
       console.error(err);
       return res.status(500).json({ error: err.code });
     });
