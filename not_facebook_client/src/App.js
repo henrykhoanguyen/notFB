@@ -22,6 +22,7 @@ import { logoutUser, getUserData } from './redux/actions/userActions';
 
 const theme = createMuiTheme(themeFile);
 
+axios.defaults.baseURL = 'https://us-central1-socialape-c0efc.cloudfunctions.net/api';
 
 const token = localStorage.FBIdToken;
 

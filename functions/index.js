@@ -1,4 +1,5 @@
 const functions = require('firebase-functions');
+const cors = require('cors');
 const { db } = require('./util/admin');
 
 // const express = require('express);
@@ -7,7 +8,7 @@ const app = require('express')();
 
 // Authenticator Middleware
 const FBAuth = require('./util/fbAuth');
-
+app.use(cors());
 const { 
     getAllScreams,
     postOneScream,
